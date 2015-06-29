@@ -12,4 +12,4 @@ El proyecto consiste de un programa en go. En este directorio se encuentran todo
     
 ## Uso
 
-    $ $GOPATH/bin/napoleon -h
+    $ napoleon run /path/to/*/files/2015/01/* > sink.tsv
