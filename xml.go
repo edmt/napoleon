@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 )
 
 type Doc struct {
@@ -61,8 +62,16 @@ type CFDNode struct {
 }
 
 type CFDIEmisor struct {
-	XMLName xml.Name `xml:"Emisor"`
-	RFC     string   `xml:"rfc,attr"`
+	XMLName         xml.Name                  `xml:"Emisor"`
+	RFC             string                    `xml:"rfc,attr"`
+	Nombre          string                    `xml:"nombre,attr"`
+	DomicilioFiscal EmisorDomicilioFiscalNode `xml:"DomicilioFiscal"`
+}
+
+type EmisorDomicilioFiscalNode struct {
+	XMLName   xml.Name `xml:"DomicilioFiscal"`
+	Municipio string   `xml:"municipio,attr"`
+	Estado    string   `xml:"estado,attr"`
 }
 
 type CFDIReceptor struct {
@@ -104,6 +113,16 @@ func (d Doc) NumeroDeFactura() string {
 	return fmt.Sprintf("%s-%s", d.Serie, d.Folio)
 }
 
+func (tfd TFDTimbreFiscalDigital) FechaTimbre() string {
+	layout := "2006-01-02T15:04:05"
+	t, err := time.Parse(layout, tfd.FechaTimbrado)
+
+	if err != nil {
+		return ""
+	}
+	return fmt.Sprintf("%d-%02d-%02d", t.Year(), t.Month(), t.Day())
+}
+
 func parseXml(doc []byte) Doc {
 	var query Doc
 	xml.Unmarshal(doc, &query)
@@ -122,14 +141,30 @@ func EncodeAsRows(path string) []string {
 	cfdi := parseXml(rawContent)
 
 	var records []string
-	var record = []string{cfdi.Complemento.TimbreFiscalDigital.UUID}
+	var record = []string{
+		cfdi.Complemento.TimbreFiscalDigital.NumeroCertificado,
+		cfdi.Emisor.RFC,
+		cfdi.Emisor.Nombre,
+		cfdi.Emisor.DomicilioFiscal.Municipio,
+		cfdi.Emisor.DomicilioFiscal.Estado,
+		cfdi.LugarExpedicion,
+		cfdi.Complemento.TimbreFiscalDigital.FechaTimbre(),
+		cfdi.Total,
+	}
 	records = append(records, strings.Join(record, "\t"))
 	return records
 }
 
 func EncodeHeaders() string {
 	var headerList = []string{
-		"UUID",
+		"Certificado",
+		"EmisorRFC",
+		"EmisorRazonSocial",
+		"EmisorMunicipio",
+		"EmisorEstado",
+		"LugarDeExpedicion",
+		"FechaTimbrado",
+		"MontoTotal",
 	}
 	return strings.Join(headerList, "\t")
 }

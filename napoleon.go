@@ -33,14 +33,15 @@ Options:
 	c := make(<-chan int)
 
 	if options["run"].(bool) {
-		c = Consumer(Producer(options))
+		c = consumer(producer(options))
 	}
-	l4g.Info("napoleon stopped")
 	<-c
+
 	time.Sleep(time.Millisecond)
+	l4g.Info("napoleon stopped")
 }
 
-func Producer(options map[string]interface{}) <-chan string {
+func producer(options map[string]interface{}) <-chan string {
 	out := make(chan string)
 	go func() {
 		directoriesList := GetDirectoriesList(options)
@@ -60,7 +61,7 @@ func Producer(options map[string]interface{}) <-chan string {
 	return out
 }
 
-func Consumer(in <-chan string) <-chan int {
+func consumer(in <-chan string) <-chan int {
 	out := make(chan int)
 	fmt.Println(EncodeHeaders())
 	go func() {
