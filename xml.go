@@ -126,3 +126,10 @@ func EncodeAsRows(path string) []string {
 	records = append(records, strings.Join(record, "\t"))
 	return records
 }
+
+func EncodeHeaders() string {
+	var headerList = []string{
+		"UUID",
+	}
+	return strings.Join(headerList, "\t")
+}
