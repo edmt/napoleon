@@ -27,7 +27,7 @@ Options:
   -h --help     Show this screen.
   -v --version  Show version.`
 
-	options, _ := docopt.Parse(usage, nil, true, "1.0.0", false)
+	options, _ := docopt.Parse(usage, nil, true, "1.0.1", false)
 	l4g.Debug(options)
 
 	c := make(<-chan int)
