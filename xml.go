@@ -147,9 +147,13 @@ func EncodeAsRows(path string) []string {
 		cfdi.Emisor.Nombre,
 		cfdi.Emisor.DomicilioFiscal.Municipio,
 		cfdi.Emisor.DomicilioFiscal.Estado,
+		cfdi.Receptor.RFC,
+		cfdi.Receptor.Nombre,
 		cfdi.LugarExpedicion,
 		cfdi.Complemento.TimbreFiscalDigital.FechaTimbre(),
 		cfdi.Total,
+		cfdi.Moneda,
+		cfdi.Complemento.TimbreFiscalDigital.UUID,
 	}
 	records = append(records, strings.Join(record, "\t"))
 	return records
@@ -162,9 +166,13 @@ func EncodeHeaders() string {
 		"EmisorRazonSocial",
 		"EmisorMunicipio",
 		"EmisorEstado",
+		"ReceptorRFC",
+		"ReceptorRazonSocial",
 		"LugarDeExpedicion",
 		"FechaTimbrado",
 		"MontoTotal",
+		"Moneda",
+		"UUID",
 	}
 	return strings.Join(headerList, "\t")
 }
