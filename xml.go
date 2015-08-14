@@ -129,6 +129,10 @@ func parseXml(doc []byte) Doc {
 	return query
 }
 
+func clean(value string) string {
+	return strings.Replace(strings.Replace(value, "\t", "", -1), "\n", "", -1)
+}
+
 func EncodeAsRows(path string) []string {
 	file, err := os.Open(path)
 
@@ -142,18 +146,18 @@ func EncodeAsRows(path string) []string {
 
 	var records []string
 	var record = []string{
-		cfdi.Complemento.TimbreFiscalDigital.NumeroCertificado,
-		cfdi.Emisor.RFC,
-		cfdi.Emisor.Nombre,
-		cfdi.Emisor.DomicilioFiscal.Municipio,
-		cfdi.Emisor.DomicilioFiscal.Estado,
-		cfdi.Receptor.RFC,
-		cfdi.Receptor.Nombre,
-		cfdi.LugarExpedicion,
-		cfdi.Complemento.TimbreFiscalDigital.FechaTimbre(),
-		cfdi.Total,
-		cfdi.Moneda,
-		cfdi.Complemento.TimbreFiscalDigital.UUID,
+		clean(cfdi.Complemento.TimbreFiscalDigital.NumeroCertificado),
+		clean(cfdi.Emisor.RFC),
+		clean(cfdi.Emisor.Nombre),
+		clean(cfdi.Emisor.DomicilioFiscal.Municipio),
+		clean(cfdi.Emisor.DomicilioFiscal.Estado),
+		clean(cfdi.Receptor.RFC),
+		clean(cfdi.Receptor.Nombre),
+		clean(cfdi.LugarExpedicion),
+		clean(cfdi.Complemento.TimbreFiscalDigital.FechaTimbre()),
+		clean(cfdi.Total),
+		clean(cfdi.Moneda),
+		clean(cfdi.Complemento.TimbreFiscalDigital.UUID),
 	}
 	records = append(records, strings.Join(record, "\t"))
 	return records
