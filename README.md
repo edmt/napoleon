@@ -1,10 +1,6 @@
 ## napoleon
 
-Proceso de extracción de datos de archivos recibidos.
-
-Periódicamente procesa el sistema de archivos y extrae los datos requeridos de archivos de recepción, para su posterior ingreso a base de datos y consulta.
-
-El proyecto consiste de un programa en go. En este directorio se encuentran todos los archivos necesarios para compilar y empaquetar el binario ejecutable.
+Proceso de extracción de datos.
 
 ## Instalación
 
@@ -12,4 +8,9 @@ El proyecto consiste de un programa en go. En este directorio se encuentran todo
     
 ## Uso
 
-    $ napoleon run /path/to/*/files/2015/01/* > sink.tsv
+El ejecutable consta de 2 comandos: `cfdi` y `conceptos`, que junto al argumento del directorio origen de los archivos imprime todo a la salida estándar.
+
+Ejemplos:
+
+    $ napoleon cfdi "/path/to/*/files/2015/01/*" > cfdi.tsv
+    $ napoleon conceptos "/path/to/*/files/2015/01/*" > conceptos.tsv
