@@ -1,8 +1,8 @@
 package main
 
 import (
-	l4g "code.google.com/p/log4go"
 	"fmt"
+	l4g "github.com/alecthomas/log4go"
 	"github.com/docopt/docopt-go"
 	"os"
 	"time"
@@ -19,7 +19,8 @@ func main() {
 
 	usage := `
 Usage:
-  napoleon run <path_location>
+  napoleon cfdi <path_location>
+  napoleon conceptos <path_location>
   napoleon -h | --help
   napoleon -v | --version
 
@@ -32,8 +33,11 @@ Options:
 
 	c := make(<-chan int)
 
-	if options["run"].(bool) {
-		c = consumer(producer(options))
+	if options["cfdi"].(bool) {
+		c = consumer(producer(options), "cfdi")
+	}
+	if options["conceptos"].(bool) {
+		c = consumer(producer(options), "conceptos")
 	}
 	<-c
 
@@ -61,12 +65,13 @@ func producer(options map[string]interface{}) <-chan string {
 	return out
 }
 
-func consumer(in <-chan string) <-chan int {
+func consumer(in <-chan string, outputType string) <-chan int {
+	l4g.Debug("Output type %s", outputType)
 	out := make(chan int)
-	fmt.Println(EncodeHeaders())
+	fmt.Println(EncodeHeaders(outputType))
 	go func() {
 		for file := range in {
-			for _, row := range EncodeAsRows(file) {
+			for _, row := range EncodeAsRows(file, outputType) {
 				fmt.Println(row)
 			}
 		}

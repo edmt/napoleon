@@ -133,7 +133,7 @@ func clean(value string) string {
 	return strings.Replace(strings.Replace(value, "\t", "", -1), "\n", "", -1)
 }
 
-func EncodeAsRows(path string) []string {
+func EncodeAsRows(path, outputType string) []string {
 	file, err := os.Open(path)
 
 	if err != nil {
@@ -145,26 +145,39 @@ func EncodeAsRows(path string) []string {
 	cfdi := parseXml(rawContent)
 
 	var records []string
-	var record = []string{
-		clean(cfdi.Complemento.TimbreFiscalDigital.NumeroCertificado),
-		clean(cfdi.Emisor.RFC),
-		clean(cfdi.Emisor.Nombre),
-		clean(cfdi.Emisor.DomicilioFiscal.Municipio),
-		clean(cfdi.Emisor.DomicilioFiscal.Estado),
-		clean(cfdi.Receptor.RFC),
-		clean(cfdi.Receptor.Nombre),
-		clean(cfdi.LugarExpedicion),
-		clean(cfdi.Complemento.TimbreFiscalDigital.FechaTimbre()),
-		clean(cfdi.Total),
-		clean(cfdi.Moneda),
-		clean(cfdi.Complemento.TimbreFiscalDigital.UUID),
+	var record []string
+
+	if outputType == "cfdi" {
+		record = []string{
+			clean(cfdi.Complemento.TimbreFiscalDigital.NumeroCertificado),
+			clean(cfdi.Emisor.RFC),
+			clean(cfdi.Emisor.Nombre),
+			clean(cfdi.Emisor.DomicilioFiscal.Municipio),
+			clean(cfdi.Emisor.DomicilioFiscal.Estado),
+			clean(cfdi.Receptor.RFC),
+			clean(cfdi.Receptor.Nombre),
+			clean(cfdi.LugarExpedicion),
+			clean(cfdi.Complemento.TimbreFiscalDigital.FechaTimbre()),
+			clean(cfdi.Total),
+			clean(cfdi.Moneda),
+			clean(cfdi.Complemento.TimbreFiscalDigital.UUID),
+		}
+		records = append(records, strings.Join(record, "\t"))
+	} else {
+		for _, concepto := range cfdi.Conceptos {
+			record = []string{
+				cfdi.Complemento.TimbreFiscalDigital.UUID,
+				concepto.Descripcion,
+			}
+			records = append(records, strings.Join(record, "\t"))
+		}
 	}
-	records = append(records, strings.Join(record, "\t"))
+
 	return records
 }
 
-func EncodeHeaders() string {
-	var headerList = []string{
+func EncodeHeaders(outputType string) string {
+	var headerListCfdi = []string{
 		"Certificado",
 		"EmisorRFC",
 		"EmisorRazonSocial",
@@ -178,5 +191,15 @@ func EncodeHeaders() string {
 		"Moneda",
 		"UUID",
 	}
-	return strings.Join(headerList, "\t")
+
+	var headerListConceptos = []string{
+		"UUID",
+		"ConceptoDescripcion",
+	}
+
+	if outputType == "cfdi" {
+		return strings.Join(headerListCfdi, "\t")
+	} else {
+		return strings.Join(headerListConceptos, "\t")
+	}
 }
